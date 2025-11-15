@@ -70,10 +70,10 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # para Postgres
-        'NAME': 'postgres',                          # nome do banco
-        'USER': 'postgres',                          # usuário do banco
-        'PASSWORD': os.environ.get('DB_PASSWORD'),  # senha do banco, segura no .env
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': os.environ.get('DB_PASSWORD'),
         'HOST': os.environ.get('DB_HOST'),  # host do Supabase
         'PORT': '5432',                              # porta do Postgres
     }
