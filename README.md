@@ -49,4 +49,5 @@ Contribuição
 - Fazer fork / branch, adicionar mudanças, garantir que migrations estejam atualizadas e enviar PR.
 
 Licença
-- Adicionar uma licença conforme desejado.
+- Toda! rsrs 
+
