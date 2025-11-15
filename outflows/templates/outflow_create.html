@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+
+<div class="container mt-4">
+    <h3 class="display-4">Criar Saída</h3>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" class="form" onsubmit="desabilitarBotao()">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button id="botao-salvar" type="submit" class="btn btn-primary">Salvar Geladinhos</button>
+            </form>
+
+            <script>
+                function desabilitarBotao() {
+                    const botao = document.getElementById('botao-salvar');
+                    botao.disabled = true;
+                    botao.innerText = "Salvando...";
+                }
+            </script>
+        </div>
+    </div>
+    <a href="{% url 'outflow_list' %}" class="btn btn-secondary mt-3">Voltar</a>
+</div>
+
+
+
+{% endblock content %}

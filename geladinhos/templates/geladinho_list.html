@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}
+OSLO - Gelados
+{% endblock title %}
+
+{% block content %}
+
+{% include "components/_geladinho_metrics.html" %}
+
+<div class="mb-4"></div>
+
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="get" action="{% url 'geladinho_list' %}">
+            <div class="input-group">
+                <input type="text" class="form-control" name="flavor" placeholder="Sabor" value="{{request.GET.flavor}}">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-6">
+        <a href="{% url 'geladinho_create' %}" class="btn btn-success float-end">
+            <i class="bi bi-plus"></i> Novo Geladinho
+        </a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Sabor</th>
+                <th>Preço de Venda</th>
+                <th>Quantidade</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+            {% for geladinho in geladinhos %}
+            <tr>
+                <td>{{geladinho.id}}</td>
+                <td>{{geladinho.flavor}}</td>
+                <td>{{geladinho.selling_price}}</td>
+                <td>{{geladinho.quantity}}</td>
+                <td>
+                    <a href={% url 'geladinho_detail' geladinho.id %} class="btn btn-info btn-sm">
+                        <i class="bi bi-eye"></i>
+                    </a>
+
+                    <a href={% url "geladinho_update" geladinho.id %} class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+
+                    <a href={% url "geladinho_delete" geladinho.id %} class="btn btn-danger btn-sm">
+                        <i class="bi bi-trash"></i>
+                    </a>
+
+                </td>
+            </tr>
+            {% endfor %}
+        <tbody>
+
+        </tbody>
+    </table>
+</div>
+
+
+{% include "components/_pagination.html" %}
+
+{% endblock content %}

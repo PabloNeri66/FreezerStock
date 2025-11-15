@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+
+    <div class="container mt-4">
+        <h3 class="display-6">Detalhes do Geladinho</h3>
+
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">{{ object.flavor }}</h3>
+                <p class="card-text" style="white-space: pre-line;">{{ object.description }}</p>
+                <p class="card-text">Preço de Custo: <strong>R$ {{ object.cost_price }}</strong></p>
+                <p class="card-text">Preço de Venda: <strong>R$ {{ object.selling_price }}</strong></p>
+                <p class="card-text">Quantidade em Estoque: <strong>{{ object.quantity }}</strong></p>
+            </div>
+        </div>
+        <a href="{% url 'geladinho_list' %}" class="btn btn-secondary mt-3">Voltar</a>
+    </div>
+
+
+{% endblock content %}
