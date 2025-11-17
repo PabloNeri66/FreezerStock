@@ -1,7 +1,9 @@
 from geladinhos.models import Geladinho
-from django.db.models import Sum
+from django.db.models import Sum, F, Case, When
 from outflows.models import Outflow
 from django.utils.formats import number_format
+from django.utils import timezone
+from django.db.models.functions import TruncDate
 
 
 def get_geladinho_metrics():
@@ -58,4 +60,34 @@ def get_sales_metrics() -> dict:
         total_geladinhos_sold=total_geladinhos_sold,
         total_sales_profit=total_sales_profit,
         total_sales_value=total_sales_value,
+    )
+
+
+def get_daily_sales_data():
+    today = timezone.now().date()
+    dates = [today - timezone.timedelta(days=i) for i in range(6, -1, -1)]
+    values = list()
+
+    for date in dates:
+        sales_total = (
+            Outflow.objects
+            .filter(created_at__date=date)
+            .select_related("geladinho")  # Evita consultas adicionais
+            .aggregate(
+                total_sales=Sum(
+                    Case(
+                        When(
+                            selling_price_outflow__isnull=False,
+                            then=F("selling_price_outflow") * F("quantity")
+                        ),
+                        default=F("geladinho__selling_price") * F("quantity"),
+                    )
+                )
+            )["total_sales"] or 0
+        )
+        values.append(float(sales_total))
+
+    return dict(
+        dates=[str(d) for d in dates],
+        values=values,
     )
