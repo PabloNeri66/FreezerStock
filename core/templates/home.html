@@ -31,7 +31,7 @@
         <script>
             document.addEventListener("DOMContentLoaded", function() {
             var dailySalesData = JSON.parse('{{ daily_sales_data|safe }}');
-            // var dailySalesQuantityData = JSON.parse('{{ daily_sales_quantity_data|safe }}');
+            var dailySalesQuantityData = JSON.parse('{{ daily_sales_quantity_data|safe }}');
     
             var ctxDailySales = document.getElementById('dailySalesChart').getContext('2d');
             var dailySalesChart = new Chart(ctxDailySales, {
@@ -72,7 +72,11 @@
             options: {
                 scales: {
                     y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,     // 👈 FORÇA O EIXO A USAR INTEIROS
+                        precision: 0     // 👈 EVITA FLOATS
+                        }
                     }
                 }
                 }
@@ -80,4 +84,64 @@
         });
         </script>
     </div>
+
+    <div class="row mt-4 justify-content-center">
+        <div class="col-md-6 text-center">
+            <h5 class="mb-3">
+                Geladinho Por Sabor
+            </h5>
+            <div class="mb-4"></div>
+            <div class="embed-responsive embed-responsive-1by1" style="width: 400px; display: inline-block;">
+                <canvas id="geladinhoByFlavorChart"></canvas>
+            </div>
+    
+
+            <script>
+            document.addEventListener("DOMContentLoaded", function() {
+
+                // --- dados vindos da view ---
+                const geladinhoCountByFlavor = JSON.parse('{{ geladinho_count_by_flavor|safe }}');
+                const geladinhoColors = {{ geladinho_colors|safe }};
+
+                // --- filtra sabores com quantidade maior que 0 ---
+                const entries = Object.entries(geladinhoCountByFlavor)
+                    .filter(([label, value]) => value > 0);
+
+                const flavorLabels = entries.map(([label]) => label);
+                const flavorValues = entries.map(([_, value]) => value);
+                const flavorBgColors = flavorLabels.map(label => geladinhoColors[label]);
+
+                // --- monta o gráfico ---
+                const ctx = document.getElementById('geladinhoByFlavorChart').getContext('2d');
+
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: flavorLabels,
+                        datasets: [{
+                            data: flavorValues,
+                            backgroundColor: flavorBgColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    font: { size: 14 }
+                                }
+                            }
+                        }
+                    }
+                });
+
+            });
+            </script>
+    </div>
+
+
 {% endblock content %}

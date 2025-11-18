@@ -1,9 +1,8 @@
 from geladinhos.models import Geladinho
-from django.db.models import Sum, F, Case, When
+from django.db.models import Sum, F, Case, When, Count
 from outflows.models import Outflow
 from django.utils.formats import number_format
 from django.utils import timezone
-from django.db.models.functions import TruncDate
 
 
 def get_geladinho_metrics():
@@ -91,3 +90,45 @@ def get_daily_sales_data():
         dates=[str(d) for d in dates],
         values=values,
     )
+
+
+def get_daily_sales_quantity_data():
+    today = timezone.now().date()
+    dates = [today - timezone.timedelta(days=i) for i in range(6, -1, -1)]
+    quantities = list()
+
+    for date in dates:
+        sales_quantity = Outflow.objects.filter(created_at__date=date).count()
+        quantities.append(sales_quantity) or 0
+
+    return dict(
+        dates=[str(d) for d in dates],
+        values=quantities,
+    )
+
+
+def get_graphic_geladinho_flavor_metric():
+    qs = (
+        Geladinho.objects
+        .values("flavor")
+        .annotate(total=Sum("quantity"))
+        .order_by("-total")
+    )
+
+    colors = {
+        "Morango": "#8f0533",    # rosa
+        "Chocolatudo Crocante": "#461d00",
+        "Flan com Caramelo": "#cc880a96",
+        "Maracujá": "#e1f017",
+        "Coco": "#ffffff",
+        "Mousse de Limão": "#004100",
+        "Ninho com Chocolate": "#726259",
+        "Paçoca": "#FFC164",
+        "Ninho com Morango": "#FA8A8A",
+        "Coco Fit": "#ffffffb9",
+        "Morango Fit": "#8f0533",
+    }
+
+    data = {item['flavor']: item['total'] for item in qs}
+
+    return data, colors
