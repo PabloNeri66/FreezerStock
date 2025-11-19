@@ -6,14 +6,18 @@ from .models import Geladinho
 from core import metrics
 from .forms import GeladinhoForm
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin
+)
 
 
-class GeladinhoListView(LoginRequiredMixin, ListView):
+class GeladinhoListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     model = Geladinho
     template_name = 'geladinho_list.html'
     context_object_name = 'geladinhos'
     paginate_by = 10
+    permission_required = 'geladinhos.view_geladinho'  # app.Djangomethod_model
 
     def get_queryset(self):
         """Filtragem por Nome"""
@@ -30,26 +34,30 @@ class GeladinhoListView(LoginRequiredMixin, ListView):
         return context
 
 
-class GeladinhoCreateView(LoginRequiredMixin, CreateView):
+class GeladinhoCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = Geladinho
     template_name = 'geladinho_create.html'
     form_class = GeladinhoForm
     success_url = reverse_lazy('geladinho_list')
+    permission_required = 'geladinhos.add_geladinho'
 
 
-class GeladinhoDetailView(LoginRequiredMixin, DetailView):
+class GeladinhoDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Geladinho
     template_name = 'geladinho_detail.html'
+    permission_required = 'geladinhos.view_geladinho'
 
 
-class GeladinhoUpdateView(LoginRequiredMixin, UpdateView):
+class GeladinhoUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     model = Geladinho
     template_name = 'geladinho_update.html'
     form_class = GeladinhoForm
     success_url = reverse_lazy('geladinho_list')
+    permission_required = 'geladinhos.change_geladinho'
 
 
-class GeladinhoDeleteView(LoginRequiredMixin, DeleteView):
+class GeladinhoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     model = Geladinho
     template_name = 'geladinho_delete.html'
     success_url = reverse_lazy('geladinho_list')
+    permission_required = 'geladinhos.view_geladinho'

@@ -21,19 +21,15 @@ OSLO - Gelados
             </div>
         </form>
     </div>
-    <div class="row mb-3"></div>
-    <div class="col-md-6">
-        <div class="col-md-6">
-            <a href="{% url 'outflow_create' %}" class="btn btn-warning float-end">
-                <i class="bi bi-cart4"></i> Adicionar Saída
-            </a>
-        </div>
 
-        <div class="col-md-6">
-            <a href="{% url 'geladinho_create' %}" class="btn btn-success float-left">
-                <i class="bi bi-plus"></i> Novo Geladinho
-            </a>
-        </div>
+    <div class="col-md-6 d-flex justify-content-end align-items-start gap-2">
+        <a href="{% url 'geladinho_create' %}" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Adicionar Gelado
+        </a>
+
+        <a href="{% url 'outflow_create' %}" class="btn btn-warning">
+            <i class="bi bi-arrow-up-right-square"></i> Criar Saída
+        </a>
     </div>
 </div>
 
