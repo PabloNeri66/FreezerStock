@@ -5,9 +5,10 @@ from .models import Outflow
 from core import metrics
 from .forms import OutflowForm
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class OutflowListView(ListView):
+class OutflowListView(LoginRequiredMixin, ListView):
     model = Outflow
     template_name = 'outflow_list.html'
     context_object_name = 'outflows'
@@ -28,13 +29,13 @@ class OutflowListView(ListView):
         return context
 
 
-class OutflowCreateView(CreateView):
+class OutflowCreateView(LoginRequiredMixin, CreateView):
     model = Outflow
     template_name = 'outflow_create.html'
     form_class = OutflowForm
     success_url = reverse_lazy('outflow_list')
 
 
-class OutflowDetailView(DetailView):
+class OutflowDetailView(LoginRequiredMixin, DetailView):
     model = Outflow
     template_name = 'outflow_detail.html'

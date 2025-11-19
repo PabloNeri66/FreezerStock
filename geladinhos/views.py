@@ -6,9 +6,10 @@ from .models import Geladinho
 from core import metrics
 from .forms import GeladinhoForm
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class GeladinhoListView(ListView):
+class GeladinhoListView(LoginRequiredMixin, ListView):
     model = Geladinho
     template_name = 'geladinho_list.html'
     context_object_name = 'geladinhos'
@@ -29,26 +30,26 @@ class GeladinhoListView(ListView):
         return context
 
 
-class GeladinhoCreateView(CreateView):
+class GeladinhoCreateView(LoginRequiredMixin, CreateView):
     model = Geladinho
     template_name = 'geladinho_create.html'
     form_class = GeladinhoForm
     success_url = reverse_lazy('geladinho_list')
 
 
-class GeladinhoDetailView(DetailView):
+class GeladinhoDetailView(LoginRequiredMixin, DetailView):
     model = Geladinho
     template_name = 'geladinho_detail.html'
 
 
-class GeladinhoUpdateView(UpdateView):
+class GeladinhoUpdateView(LoginRequiredMixin, UpdateView):
     model = Geladinho
     template_name = 'geladinho_update.html'
     form_class = GeladinhoForm
     success_url = reverse_lazy('geladinho_list')
 
 
-class GeladinhoDeleteView(DeleteView):
+class GeladinhoDeleteView(LoginRequiredMixin, DeleteView):
     model = Geladinho
     template_name = 'geladinho_delete.html'
     success_url = reverse_lazy('geladinho_list')
