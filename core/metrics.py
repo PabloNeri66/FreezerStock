@@ -116,9 +116,9 @@ def get_graphic_geladinho_flavor_metric():
     )
 
     colors = {
-        "Morango": "#8f0533",    # rosa
+        "Morango": "#ff6498",    # rosa
         "Chocolatudo Crocante": "#461d00",
-        "Flan com Caramelo": "#cc880a96",
+        "Flan com Caramelo": "#ec520bea",
         "Maracujá": "#e1f017",
         "Coco": "#ffffff",
         "Mousse de Limão": "#004100",
@@ -126,7 +126,7 @@ def get_graphic_geladinho_flavor_metric():
         "Paçoca": "#FFC164",
         "Ninho com Morango": "#FA8A8A",
         "Coco Fit": "#ffffffb9",
-        "Morango Fit": "#8f0533",
+        "Morango Fit": "#660123",
     }
 
     data = {item['flavor']: item['total'] for item in qs}

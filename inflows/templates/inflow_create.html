@@ -9,11 +9,19 @@
 
     <div class="card">
         <div class="card-body">
-            <form method="post" class="form">
+            <form method="post" class="form" onsubmit="desabilitarBotao()">
                 {% csrf_token %}
                 {{ form.as_p }}
-                <button type="submit" class="btn btn-primary">Registrar Entrada</button>
+                <button id="botao-salvar" type="submit" class="btn btn-primary">Registrar Entrada</button>
             </form>
+
+            <script>
+                function desabilitarBotao() {
+                    const botao = document.getElementById('botao-salvar');
+                    botao.disabled = true;
+                    botao.innerText = "Salvando...";
+                }
+            </script>
         </div>
     </div>
     <a href="{% url 'inflow_list' %}" class="btn btn-secondary mt-3">Voltar</a>
