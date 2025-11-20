@@ -13,32 +13,39 @@
               <span class="ms-1">Dashboard</span>
             </a>
           </li>
+          {% if perms.geladinhos.view_geladinho %}
           <li>
             <a href={% url 'geladinho_list' %} class="nav-link px-0 align-middle">
               <i class="bi bi-box-seam fs-4"></i>
               <span class="ms-1">Geladinhos</span>
             </a>
           </li>
+          {% endif %}
+          {% if perms.inflows.view_inflow %}
           <li>
             <a href={% url 'inflow_list' %} class="nav-link px-0 align-middle">
               <i class="bi bi-arrow-down-left-square fs-4"></i>
               <span class="ms-1">Entradas</span>
             </a>
           </li>
+          {% endif %}
+          {% if perms.outflows.view_outflow %}
           <li>
             <a href="{% url 'outflow_list' %}" class="nav-link px-0 align-middle">
               <i class="bi bi-arrow-up-right-square fs-4"></i>
               <span class="ms-1">Saídas</span>
             </a>
-            <li class="nav-item">
-              {% if user.is_authenticated %}
-                <form action="{% url 'logout' %}" method="post" id="logout-form" class="nav-link px-0 align-middle">
-                  {% csrf_token %}
-                  <button type="submit" class="btn btn-link text-decoration-none text-reset nav-link px-0 align-middle">
-                    <i class="bi bi-box-arrow-right fs-4 align-middle"></i>
-                    <span class="ms-1 align-middle">Sair</span>
-                  </button>
-                </form>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            {% if user.is_authenticated %}
+              <form action="{% url 'logout' %}" method="post" id="logout-form" class="nav-link px-0 align-middle">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link text-decoration-none text-reset nav-link px-0 align-middle">
+                  <i class="bi bi-box-arrow-right fs-4 align-middle"></i>
+                  <span class="ms-1 align-middle">Sair</span>
+                </button>
+              </form>
             {% endif %}
           </li>
         </ul>
