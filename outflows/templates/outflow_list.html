@@ -22,11 +22,13 @@ OSLO - Saídas
         </form>
     </div>
 
+    {% if perms.outflow.add_outflow %}
     <div class="col-md-6">
         <a href="{% url 'outflow_create' %}" class="btn btn-success float-end">
             <i class="bi bi-plus-circle"></i> Nova Saída
         </a>
     </div>
+    {% endif %}
 </div>
 
 <div class="table-responsive">

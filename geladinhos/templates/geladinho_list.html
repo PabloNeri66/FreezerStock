@@ -22,14 +22,17 @@ OSLO - Gelados
         </form>
     </div>
 
+    {% if perms.geladinho.add_geladinho %}
     <div class="col-md-6 d-flex justify-content-end align-items-start gap-2">
         <a href="{% url 'geladinho_create' %}" class="btn btn-success">
             <i class="bi bi-plus-circle"></i> Adicionar Gelado
         </a>
-
+    {% endif %}
+    {% if perms.outflow.add_outflow %}
         <a href="{% url 'outflow_create' %}" class="btn btn-warning">
             <i class="bi bi-arrow-up-right-square"></i> Criar Saída
         </a>
+    {% endif %}
     </div>
 </div>
 
@@ -51,17 +54,22 @@ OSLO - Gelados
                 <td>{{geladinho.selling_price}}</td>
                 <td>{{geladinho.quantity}}</td>
                 <td>
+                    
                     <a href={% url 'geladinho_detail' geladinho.id %} class="btn btn-info btn-sm">
                         <i class="bi bi-eye"></i>
                     </a>
 
+                    {% if perms.geladinhos.change_geladinho %}
                     <a href={% url "geladinho_update" geladinho.id %} class="btn btn-warning btn-sm">
                         <i class="bi bi-pencil"></i>
                     </a>
+                    {% endif %}
 
+                    {% if perms.geladinhos.delete_geladinho %}
                     <a href={% url "geladinho_delete" geladinho.id %} class="btn btn-danger btn-sm">
                         <i class="bi bi-trash"></i>
                     </a>
+                    {% endif %}
 
                 </td>
             </tr>
