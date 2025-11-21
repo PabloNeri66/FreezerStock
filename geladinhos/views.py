@@ -6,7 +6,7 @@ from rest_framework.generics import (
 )
 from .serializers import GeladinhoSerializer
 from .models import Geladinho
-from core import metrics
+from core import metrics, permissions
 from .forms import GeladinhoForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import (
@@ -70,8 +70,11 @@ class GeladinhoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteVie
 class GeladinhoListCreateApiView(ListCreateAPIView):
     queryset = Geladinho.objects.all()
     serializer_class = GeladinhoSerializer
+    permission_classes = [permissions.GlobalDefaultPermission]
 
 
 class GeladinhoRetrieveUpdateDestroyApiView(RetrieveUpdateDestroyAPIView):
     queryset = Geladinho.objects.all()
     serializer_class = GeladinhoSerializer
+    permission_classes = [permissions.GlobalDefaultPermission]
+

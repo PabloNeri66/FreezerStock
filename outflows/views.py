@@ -6,7 +6,7 @@ from rest_framework.generics import (
 )
 from .serializers import OutflowSerializer
 from .models import Outflow
-from core import metrics
+from core import metrics, permissions
 from .forms import OutflowForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import (
@@ -54,8 +54,10 @@ class OutflowDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
 class OutflowListCreateApiView(ListCreateAPIView):
     queryset = Outflow.objects.all()
     serializer_class = OutflowSerializer
+    permission_classes = [permissions.GlobalDefaultPermission]
 
 
 class OutflowRetrieveApiView(RetrieveAPIView):
     queryset = Outflow.objects.all()
     serializer_class = OutflowSerializer
+    permission_classes = [permissions.GlobalDefaultPermission]

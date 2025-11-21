@@ -4,6 +4,7 @@ from django.views.generic import (
 from rest_framework.generics import(
     ListCreateAPIView, RetrieveAPIView,
 )
+from core import permissions
 from .serializers import InflowSerializer
 from .models import Inflow
 from .forms import InflowForm
@@ -48,8 +49,10 @@ class InflowDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
 class InflowListCreateApiView(ListCreateAPIView):
     queryset = Inflow.objects.all()
     serializer_class = InflowSerializer
+    permission_classes = [permissions.GlobalDefaultPermission]
 
 
 class InflowRetrieveApiView(RetrieveAPIView):
     queryset = Inflow.objects.all()
     serializer_class = InflowSerializer
+    permission_classes = [permissions.GlobalDefaultPermission]
