@@ -1,6 +1,10 @@
 from django.views.generic import (
     ListView, CreateView, DetailView,
 )
+from rest_framework.generics import (
+    ListCreateAPIView, RetrieveAPIView,
+)
+from .serializers import OutflowSerializer
 from .models import Outflow
 from core import metrics
 from .forms import OutflowForm
@@ -44,3 +48,14 @@ class OutflowDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
     model = Outflow
     template_name = 'outflow_detail.html'
     permission_required = 'outflows.detail_outflow'
+
+
+# API
+class OutflowListCreateApiView(ListCreateAPIView):
+    queryset = Outflow.objects.all()
+    serializer_class = OutflowSerializer
+
+
+class OutflowRetrieveApiView(RetrieveAPIView):
+    queryset = Outflow.objects.all()
+    serializer_class = OutflowSerializer
