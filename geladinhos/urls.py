@@ -1,13 +1,12 @@
 from django.urls import path
 from .views import (
-    GeladinhoListView,
-    GeladinhoCreateView,
-    GeladinhoDetailView,
-    GeladinhoUpdateView,
-    GeladinhoDeleteView,
+    GeladinhoListView, GeladinhoCreateView, GeladinhoDetailView,
+    GeladinhoUpdateView, GeladinhoDeleteView,
+    GeladinhoListCreateApiView, GeladinhoRetrieveUpdateDestroyApiView,
 )
 
 urlpatterns = [
+    # Sistema
     path(
         'geladinhos/list/',
         GeladinhoListView.as_view(),
@@ -32,5 +31,17 @@ urlpatterns = [
         'geladinhos/<int:pk>/delete/',
         GeladinhoDeleteView.as_view(),
         name='geladinho_delete',
+    ),
+
+    # API
+    path(
+        'api/v1/geladinhos/',
+        GeladinhoListCreateApiView.as_view(),
+        name='geladinho-list-create-api-view',
+    ),
+    path(
+        'api/v1/geladinhos/<int:pk>',
+        GeladinhoRetrieveUpdateDestroyApiView.as_view(),
+        name='geladinho-detail-api-view',
     )
 ]

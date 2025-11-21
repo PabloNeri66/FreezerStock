@@ -1,7 +1,10 @@
-# Create your views here.
 from django.views.generic import (
     ListView, CreateView, DetailView, UpdateView, DeleteView,
 )
+from rest_framework.generics import (
+    ListCreateAPIView, RetrieveUpdateDestroyAPIView,
+)
+from .serializers import GeladinhoSerializer
 from .models import Geladinho
 from core import metrics
 from .forms import GeladinhoForm
@@ -61,3 +64,14 @@ class GeladinhoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteVie
     template_name = 'geladinho_delete.html'
     success_url = reverse_lazy('geladinho_list')
     permission_required = 'geladinhos.view_geladinho'
+
+
+# API VIEWS
+class GeladinhoListCreateApiView(ListCreateAPIView):
+    queryset = Geladinho.objects.all()
+    serializer_class = GeladinhoSerializer
+
+
+class GeladinhoRetrieveUpdateDestroyApiView(RetrieveUpdateDestroyAPIView):
+    queryset = Geladinho.objects.all()
+    serializer_class = GeladinhoSerializer
