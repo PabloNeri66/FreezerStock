@@ -45,9 +45,8 @@ Observações rápidas
 - Signals atualizam automaticamente a quantidade no modelo [`geladinhos.models.Geladinho`](geladinhos/models.py) quando entradas/saídas são criadas.
 - Ajuste `BASE_DIR`, `DATABASES` e variáveis de ambiente em [core/settings.py](core/settings.py) conforme seu ambiente (local / produção).
 
-Contribuição
-- Fazer fork / branch, adicionar mudanças, garantir que migrations estejam atualizadas e enviar PR.
+API: Api Integrada para consulta básica e Crud, além de futura Integracao.
 
-Licença
-- Toda! rsrs 
+
+
 
