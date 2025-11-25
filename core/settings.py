@@ -1,4 +1,5 @@
 import os
+import dj_database_url
 from pathlib import Path
 from dotenv import load_dotenv
 from datetime import timedelta
@@ -72,14 +73,19 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD': os.environ.get('DB_PASSWORD'),
-        'HOST': os.environ.get('DB_HOST'),  # host do Supabase
-        'PORT': os.environ.get('DB_PORT'),  # porta do Postgres
-    }
+    'default': dj_database_url.parse(
+        os.getenv('DB_N1_URL'),
+        conn_max_age=600,
+        ssl_require=True
+    )
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': os.environ.get('DB_NAME'),
+    #     'USER': os.environ.get('DB_USER'),
+    #     'PASSWORD': os.environ.get('DB_PASSWORD'),
+    #     'HOST': os.environ.get('DB_HOST'),  # host do Supabase
+    #     'PORT': os.environ.get('DB_PORT'),  # porta do Postgres
+    # }
 }
 
 
