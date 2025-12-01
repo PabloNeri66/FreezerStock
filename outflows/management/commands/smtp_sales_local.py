@@ -6,6 +6,47 @@ from outflows.models import Outflow
 
 
 class Command(BaseCommand):
+    """
+Management command Django para gerar e enviar o Relatório Diário de Vendas por e-mail.
+
+Este comando permite gerar um relatório das vendas de um dia específico,
+passado como argumento ao chamar o comando, e envia o relatório por e-mail
+para o endereço configurado na variável de ambiente EMAILTO.
+
+O usuário deve fornecer o dia do relatório (número de 1 a 31) como argumento.
+Caso o dia informado seja maior que o dia atual do mês, o comando ajusta o mês
+automaticamente para o mês anterior. Isso permite gerar relatórios de até 30 dias
+retroativos. Por exemplo, se hoje é 1 de dezembro e o usuário informa dia 2,
+o comando irá gerar o relatório para 2 de novembro.
+
+Classes e métodos:
+
+Command(BaseCommand):
+    add_arguments(parser):
+        Adiciona o argumento obrigatório 'Dia do Relatório', que deve ser
+        um número representando o dia do mês para o qual deseja-se gerar o relatório.
+
+    handle(*args, **options):
+        Ponto de entrada do comando. Recebe o dia do relatório, ajusta a data
+        considerando o mês/ano correto, busca os dados das vendas e envia o e-mail.
+
+    date_fix_daily_report(daily_report) -> str:
+        Ajusta o dia do relatório passado pelo usuário para a data completa
+        no formato YYYY-MM-DD. Trata casos em que o dia informado é maior
+        que o dia atual, ajustando o mês e ano corretamente.
+
+    search_data_for_daily_report(date_fixed) -> dict:
+        Consulta no banco de dados todas as vendas (Outflow) do dia especificado.
+        Utiliza select_related('geladinho') para evitar queries N+1 ao acessar
+        informações do produto (Geladinho) relacionado.
+
+    model_smtp(daily_report_data, date_fixed):
+        Constrói e envia o e-mail com o relatório diário.
+        - daily_report_data: dicionário contendo os registros de vendas do dia.
+        - date_fixed: data completa do relatório (YYYY-MM-DD) para exibir no corpo do e-mail.
+        Formata a data/hora de cada venda para leitura mais amigável (dd/mm/yyyy HH:MM:SS).
+"""
+
     def add_arguments(self, parser):
         parser.add_argument(
             'Dia do Relatório',
