@@ -1,4 +1,4 @@
-import datetime, os
+import os, datetime
 
 from django.core.management.base import BaseCommand
 from django.core.mail import EmailMessage
@@ -7,119 +7,95 @@ from outflows.models import Outflow
 
 class Command(BaseCommand):
     """
-Management command Django para gerar e enviar o Relatório Diário de Vendas por e-mail.
-
-Este comando permite gerar um relatório das vendas de um dia específico,
-passado como argumento ao chamar o comando, e envia o relatório por e-mail
-para o endereço configurado na variável de ambiente EMAILTO.
-
-O usuário deve fornecer o dia do relatório (número de 1 a 31) como argumento.
-Caso o dia informado seja maior que o dia atual do mês, o comando ajusta o mês
-automaticamente para o mês anterior. Isso permite gerar relatórios de até 30 dias
-retroativos. Por exemplo, se hoje é 1 de dezembro e o usuário informa dia 2,
-o comando irá gerar o relatório para 2 de novembro.
-
-Classes e métodos:
-
-Command(BaseCommand):
-    add_arguments(parser):
-        Adiciona o argumento obrigatório 'Dia do Relatório', que deve ser
-        um número representando o dia do mês para o qual deseja-se gerar o relatório.
-
-    handle(*args, **options):
-        Ponto de entrada do comando. Recebe o dia do relatório, ajusta a data
-        considerando o mês/ano correto, busca os dados das vendas e envia o e-mail.
-
-    date_fix_daily_report(daily_report) -> str:
-        Ajusta o dia do relatório passado pelo usuário para a data completa
-        no formato YYYY-MM-DD. Trata casos em que o dia informado é maior
-        que o dia atual, ajustando o mês e ano corretamente.
-
-    search_data_for_daily_report(date_fixed) -> dict:
-        Consulta no banco de dados todas as vendas (Outflow) do dia especificado.
-        Utiliza select_related('geladinho') para evitar queries N+1 ao acessar
-        informações do produto (Geladinho) relacionado.
-
-    model_smtp(daily_report_data, date_fixed):
-        Constrói e envia o e-mail com o relatório diário.
-        - daily_report_data: dicionário contendo os registros de vendas do dia.
-        - date_fixed: data completa do relatório (YYYY-MM-DD) para exibir no corpo do e-mail.
-        Formata a data/hora de cada venda para leitura mais amigável (dd/mm/yyyy HH:MM:SS).
-"""
+    Comando Django para gerar e enviar Relatório Diário de Vendas.
+    Uso manual: permite informar o dia do relatório (1 a 31).
+    Caso o dia seja maior que o dia atual, o comando ajusta mês/ano automaticamente.
+    Idealmente usado pelo envio automático diário (via GitHub Actions ou Celery), 
+    mas pode ser usado manualmente caso o automático falhe.
+    """
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'Dia do Relatório',
-            type=str,
-            help='''
-            para gerar o relatório de hoje -> XX
-            por exemplo: hoje dia 1/12/25, digite 1.
-            ''',
+            '--dia',  # opcional, para uso manual
+            type=int,
+            help='Dia do relatório (1-31). Se não informado, usa o dia atual.'
         )
 
-    # Onde ocorre a parada mesmo
     def handle(self, *args, **options):
-        daily_report = options['Dia do Relatório']
+        # Se o dia não for informado, usar o dia atual
+        day_input = options.get('dia')
+        if day_input:
+            if not (1 <= day_input <= 31):
+                self.stdout.write(self.style.ERROR("Dia inválido. 1 a 31."))
+                return
+            daily_report_day = int(day_input)
+        else:
+            daily_report_day = int(datetime.date.today().day)
 
-        date_fixed = self.date_fix_daily_report(daily_report)  # recebe retorno
+        # Ajusta data completa YYYY-MM-DD
+        report_date = self.date_fix_daily_report(daily_report_day)
 
-        daily_report_data = self.search_data_for_daily_report(date_fixed)
+        # Busca dados no banco
+        daily_report_query_data = self.query_data_for_daily_report(
+            report_date
+        )
 
-        self.model_smtp(daily_report_data, date_fixed)
+        # Envia e-mail
+        self.model_smtp(daily_report_query_data, report_date)
 
-    def date_fix_daily_report(self, daily_report):
+    def date_fix_daily_report(self, daily_report_day: int) -> str:
+        """
+        Recebe um dia (1-31) e retorna uma string YYYY-MM-DD.
+        - Se o dia informado for maior que o dia atual, assume que é do mês anterior.
+        - Ajusta ano automaticamente se passar de dezembro para novembro/ano anterior.
+        """
         today = datetime.date.today()
-        date = str(today)
+        report_day = daily_report_day
 
-        daily_report_list = list(daily_report)
-        date_list = list(date)
+        # assume o mesmo mês e ano inicialmente
+        report_date = today.replace(day=report_day)
 
-        current_day = int(date_list[-2] + date_list[-1])
-
-        report_day = int(daily_report)
-
-        if report_day > current_day:
-            month = int(date_list[5] + date_list[6])
-            month -= 1
-            if month == 0:
+        # se o dia informado é maior que o dia atual, retrocede um mês
+        if report_day > today.day:
+            # retroceder um mês, ajustando ano se necessário
+            if today.month == 1:
                 month = 12
-                year = int("".join(date_list[0:4])) - 1
-                year_str = f"{year:04d}"
-                date_list[0:4] = list(year_str)
+                year = today.year - 1
+            else:
+                month = today.month - 1
+                year = today.year
 
-            month_str = f"{month:02d}"
-            date_list[5] = month_str[0]
-            date_list[6] = month_str[1]
+            # garante que o dia não exceda o último dia do mês
+            try:
+                report_date = datetime.date(year, month, report_day)
+            except ValueError:
+                # se dia inválido para o mês, pega último dia do mês
+                next_month = datetime.date(year, month + 1, 1) if month < 12 else datetime.date(year + 1, 1, 1)
+                report_date = next_month - datetime.timedelta(days=1)
 
-        date_list[-2] = daily_report_list[0]
-        date_list[-1] = daily_report_list[1]
+        return report_date.strftime("%Y-%m-%d")
 
-        # transformar de volta:
-        date_fixed = "".join(date_list)
-
-        return date_fixed
-
-    def search_data_for_daily_report(self, date_fixed):
+    def query_data_for_daily_report(self, report_date):
         daily_values = Outflow.objects.filter(
-            created_at__date=date_fixed
+            created_at__date=report_date
         ).select_related('geladinho')
-        daily_report_data = dict(
+        daily_report_query_data = dict(
             daily_values=daily_values
         )
 
-        return daily_report_data
+        return daily_report_query_data
 
-    def model_smtp(self, daily_report_data, date_fixed):
+    def model_smtp(self, daily_report_query_data, report_date):
 
         # --- Dados do relatório ---
-        daily_outflows = daily_report_data["daily_values"]
+        daily_outflows = daily_report_query_data["daily_values"]
 
         # --- Assunto ---
         subject = "Relatório Diário de Vendas"
 
         # --- Corpo do e-mail ---
         body_lines = [
-            f"Olá, segue o relatório do dia {date_fixed}:\n",
+            f"Olá, segue o relatório do dia {report_date}:\n",
             "-------------------------------------",
         ]
 
