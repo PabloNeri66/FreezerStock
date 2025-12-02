@@ -1,5 +1,5 @@
 [project]
-"name = "FreezerStock-Sistema-de-Armazem"
+name = "FreezerStock-Sistema-de-Armazem"
 version = "0.1.0"
 description = ""
 authors = [
