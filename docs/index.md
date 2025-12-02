@@ -1,11 +1,11 @@
-# Fauna - Gelados Management System
+# FreezerStock - Sistema de Armazém
 
 Sistema completo de gestão de estoque para produtos gelados, com entradas (inflows), saídas (outflows), dashboard com métricas e API REST.
 
 ---
 
 ## 🎯 Visão Geral
-O **Fauna** é um sistema modular para gerenciamento de geladinhos:
+O **FreezerStock** é um sistema modular para gerenciamento de geladinhos:
 
 - Cadastro de produtos com preço de custo e venda.
 - Controle de quantidade em estoque.
