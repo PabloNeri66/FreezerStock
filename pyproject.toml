@@ -1,0 +1,22 @@
+[project]
+name = "FreezerStock - Sistema de Armazém"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "pabloneri66",email = "pabloneri66@gmail.com"}
+]
+
+[tool.ruff]
+line-length = 79
+extend-exclude = ['migrations']
+
+[tool.ruff.lint]
+preview = true
+select = ['I', 'F', 'E', 'W', 'PL', 'PT']
+
+[tool.ruff.format]
+preview = true
+quote-style = 'single'
+
+[tool.taskipy.tasks]
+docs = 'mkdocs serve -a 127.0.0.1:8001'
