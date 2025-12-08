@@ -77,4 +77,3 @@ class GeladinhoRetrieveUpdateDestroyApiView(RetrieveUpdateDestroyAPIView):
     queryset = Geladinho.objects.all()
     serializer_class = GeladinhoSerializer
     permission_classes = [permissions.GlobalDefaultPermission]
-
