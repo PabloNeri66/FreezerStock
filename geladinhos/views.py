@@ -25,15 +25,15 @@ class GeladinhoListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     def get_queryset(self):
         """Filtragem por Nome"""
         queryset = super().get_queryset()
-        flavor = self.request.GET.get('flavor')
+        flavor = self.request.GET.get('flavor')  # ?flavor=****
 
         if flavor:
             queryset = queryset.filter(flavor__icontains=flavor)
         return queryset
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["geladinho_metrics"] = metrics.get_geladinho_metrics()
+        context = super().get_context_data(**kwargs)  # Contextos da view
+        context["geladinho_metrics"] = metrics.get_geladinho_metrics()  # Contextos além da view
         return context
 
 
