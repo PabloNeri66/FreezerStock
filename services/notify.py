@@ -4,11 +4,11 @@ import requests
 class Notify:
 
     def __init__(self):
-        self.__base_url = 'https://webhook.site'
+        self.__base_url = 'http://127.0.0.1:8001'
 
-    def send_event(self, data):
+    def send_outflow_event(self, data):
         requests.post(
-            f'{self.__base_url}/017b14fe-f7ae-4ada-9d91-a2afe0589956',
+            f'{self.__base_url}/api/v1/webohooks/outflow',
             json=data,
             timeout=5,
         )

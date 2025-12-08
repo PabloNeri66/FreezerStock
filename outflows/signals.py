@@ -40,7 +40,7 @@ def send_outflow_event(sender, instance, created, **kwargs):
                 description=instance.description,
             )
 
-            notify.send_event(data)
+            notify.send_outflow_event(data)
 
         except Exception as e:
             logger.error(f"[ERRO SIGNAL Outflow] {e}")
