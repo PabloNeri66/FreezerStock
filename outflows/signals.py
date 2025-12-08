@@ -1,6 +1,6 @@
 import json, logging
 
-from datetime import datetime
+from django.utils import timezone
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from outflows.models import Outflow
@@ -31,7 +31,9 @@ def send_outflow_event(sender, instance, created, **kwargs):
                 geladinho=instance.geladinho.flavor,
                 geladinho_id=instance.geladinho.id,
                 quantity=instance.quantity,
-                timestamp_created_at=instance.created_at.strftime("%Y/%m/%d, %H:%M:%S"),
+                timestamp_created_at=timezone.localtime(
+                    instance.created_at
+                ).strftime("%Y/%m/%d, %H:%M:%S"),
                 selling_price=float(
                     instance.geladinho.selling_price
                     if instance.selling_price_outflow is None
