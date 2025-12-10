@@ -1,4 +1,4 @@
-import json, logging
+import logging
 
 from django.utils import timezone
 from django.db.models.signals import post_save
