@@ -1,17 +1,30 @@
-from django.views.generic import (
-    ListView, CreateView, DetailView,
-)
-from rest_framework.generics import (
-    ListCreateAPIView, RetrieveAPIView,
-)
-from .serializers import OutflowSerializer
-from .models import Outflow
-from core import metrics, permissions
-from .forms import OutflowForm
-from django.urls import reverse_lazy
+# Django
 from django.contrib.auth.mixins import (
-    LoginRequiredMixin, PermissionRequiredMixin
+    LoginRequiredMixin,
+    PermissionRequiredMixin,
 )
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.generic import (
+    ListView,
+    CreateView,
+    DetailView,
+)
+
+# Django REST Framework
+from rest_framework.generics import (
+    ListCreateAPIView,
+    RetrieveAPIView,
+)
+
+# Core / projeto
+from core import metrics, permissions
+
+# App local
+from .forms import OutflowForm
+from .models import Outflow
+from .serializers import OutflowSerializer
 
 
 class OutflowListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -23,7 +36,7 @@ class OutflowListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         """Filtragem por Nome"""
-        queryset = super().get_queryset().defer('description')
+        queryset = super().get_queryset().select_related('geladinho')
         geladinho = self.request.GET.get('geladinho')
 
         if geladinho:
@@ -54,7 +67,11 @@ class OutflowDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
 class OutflowListCreateApiView(ListCreateAPIView):
     queryset = Outflow.objects.all()
     serializer_class = OutflowSerializer
-    permission_classes = [permissions.GlobalDefaultPermission]
+    # permission_classes = [permissions.GlobalDefaultPermission]
+
+    @method_decorator(cache_page(60 * 15, key_prefix='outflow_list'))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class OutflowRetrieveApiView(RetrieveAPIView):

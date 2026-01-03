@@ -1,7 +1,10 @@
-import json, logging
+import logging
 
 from django.utils import timezone
-from django.db.models.signals import post_save
+from django.core.cache import cache
+from django.db.models.signals import (
+    post_save, post_delete
+)
 from django.dispatch import receiver
 from outflows.models import Outflow
 from services.notify import Notify
@@ -23,8 +26,8 @@ def update_geladinho_quantity(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Outflow)
 def send_outflow_event(sender, instance, created, **kwargs):
-    if created:
-        try:
+    try:
+        if created:
             data = dict(
                 event_type='create_outflow',
                 outflow=instance.id,
@@ -44,6 +47,17 @@ def send_outflow_event(sender, instance, created, **kwargs):
 
             notify.send_outflow_event(data)
 
-        except Exception as e:
-            logger.error(f"[ERRO SIGNAL Outflow] {e}")
-            pass
+    except Exception as e:
+        logger.error(f"[ERRO SIGNAL Outflow] {e}")
+        pass
+
+
+@receiver([post_save, post_delete], sender=Outflow)
+def invalidate_product_cache(sender, instance, **kwargs):
+    """
+    Invalidate product list caches when a product is created, updated
+    or deleted
+    """
+    print("Clearing product cache")
+
+    cache.delete_pattern('*outflow_list*')
