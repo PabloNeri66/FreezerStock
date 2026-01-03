@@ -20,7 +20,7 @@ class GlobalDefaultPermission(permissions.BasePermission):
         return request.user.has_perm(model_permission_codename)
 
     def __get_model_permission_codename(self, method, view):
-        
+
         try:
             model_name = view.queryset.model._meta.model_name
             app_label = view.queryset.model._meta.app_label
