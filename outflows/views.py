@@ -3,8 +3,10 @@ from django.contrib.auth.mixins import (
     LoginRequiredMixin,
     PermissionRequiredMixin,
 )
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.decorators.cache import cache_page
 from django.views.generic import (
     ListView,
@@ -25,6 +27,7 @@ from core import metrics, permissions
 from .forms import OutflowForm
 from .models import Outflow
 from .serializers import OutflowSerializer
+from .tasks import csv_outflows_generator
 
 
 class OutflowListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -67,7 +70,7 @@ class OutflowDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
 class OutflowListCreateApiView(ListCreateAPIView):
     queryset = Outflow.objects.all()
     serializer_class = OutflowSerializer
-    # permission_classes = [permissions.GlobalDefaultPermission]
+    permission_classes = [permissions.GlobalDefaultPermission]  # Qg fixed kkk
 
     @method_decorator(cache_page(60 * 15, key_prefix='outflow_list'))
     def list(self, request, *args, **kwargs):
@@ -78,3 +81,13 @@ class OutflowRetrieveApiView(RetrieveAPIView):
     queryset = Outflow.objects.all()
     serializer_class = OutflowSerializer
     permission_classes = [permissions.GlobalDefaultPermission]
+
+
+# Tasks
+class OutflowCsvGenerator(View):
+    def post(self, request):
+        task = csv_outflows_generator.delay()
+        return JsonResponse({
+            'status': 'processando',
+            'task_id': task.id
+        })
