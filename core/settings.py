@@ -152,12 +152,3 @@ CACHES = {
         },
     },
 }
-
-# Celery Worker
-CELERY_BROKER_URL = 'pyamqp://guest@localhost//'
-CELERY_TIMEZONE = 'America/Sao_Paulo'
-
-
-# Salvar as parada
-MEDIA_ROOT = BASE_DIR / "media"
-MEDIA_URL = "/media/"

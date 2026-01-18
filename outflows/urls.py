@@ -5,7 +5,6 @@ from .views import (
     OutflowDetailView,
     OutflowListCreateApiView,
     OutflowRetrieveApiView,
-    OutflowCsvGenerator,
 )
 
 urlpatterns = [
@@ -35,12 +34,5 @@ urlpatterns = [
         'api/v1/outflows/<int:pk>/',
         OutflowRetrieveApiView.as_view(),
         name='outflow-detail-api-view',
-    ),
-
-    # tasks
-    path(
-        'outflows/list/tasks/csv',
-        OutflowCsvGenerator.as_view(),
-        name='outflows-csv-generator',
     ),
 ]
