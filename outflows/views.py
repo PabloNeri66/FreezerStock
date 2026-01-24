@@ -11,7 +11,8 @@ from django.views.generic import (
     CreateView,
     DetailView,
 )
-
+# Django Filters
+from django_filters.rest_framework import DjangoFilterBackend
 # Django REST Framework
 from rest_framework.generics import (
     ListCreateAPIView,
@@ -25,6 +26,7 @@ from core import metrics, permissions
 from .forms import OutflowForm
 from .models import Outflow
 from .serializers import OutflowSerializer
+from .filters import OutflowFilter
 
 
 class OutflowListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -65,13 +67,15 @@ class OutflowDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
 
 # API
 class OutflowListCreateApiView(ListCreateAPIView):
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = OutflowFilter
     queryset = Outflow.objects.all()
     serializer_class = OutflowSerializer
-    # permission_classes = [permissions.GlobalDefaultPermission]
+    permission_classes = [permissions.GlobalDefaultPermission]
 
-    @method_decorator(cache_page(60 * 15, key_prefix='outflow_list'))
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+    # @method_decorator(cache_page(60 * 15, key_prefix='outflow_list'))
+    # def list(self, request, *args, **kwargs):
+    #     return super().list(request, *args, **kwargs)
 
 
 class OutflowRetrieveApiView(RetrieveAPIView):
