@@ -1,18 +1,21 @@
+from django.contrib.auth.mixins import (
+    LoginRequiredMixin,
+    PermissionRequiredMixin
+)
+from django_filters.rest_framework import DjangoFilterBackend
+from django.urls import reverse_lazy
 from django.views.generic import (
     ListView, CreateView, DetailView, UpdateView, DeleteView,
 )
 from rest_framework.generics import (
     ListCreateAPIView, RetrieveUpdateDestroyAPIView,
 )
+
+from core import metrics, permissions
+from .filters import GeladinhoFilter
+from .forms import GeladinhoForm
 from .serializers import GeladinhoSerializer
 from .models import Geladinho
-from core import metrics, permissions
-from .forms import GeladinhoForm
-from django.urls import reverse_lazy
-from django.contrib.auth.mixins import (
-    LoginRequiredMixin,
-    PermissionRequiredMixin
-)
 
 
 class GeladinhoListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
@@ -24,7 +27,7 @@ class GeladinhoListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
     def get_queryset(self):
         """Filtragem por Nome"""
-        queryset = super().get_queryset()
+        queryset = super().get_queryset() # Geladinho objects all
         flavor = self.request.GET.get('flavor')  # ?flavor=****
 
         if flavor:
@@ -68,6 +71,8 @@ class GeladinhoDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteVie
 
 # API VIEWS
 class GeladinhoListCreateApiView(ListCreateAPIView):
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = GeladinhoFilter
     queryset = Geladinho.objects.all()
     serializer_class = GeladinhoSerializer
     permission_classes = [permissions.GlobalDefaultPermission]
